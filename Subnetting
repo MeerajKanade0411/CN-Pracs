@@ -1,0 +1,94 @@
+import math as mt
+
+def decimal_to_binary(decimal_str):
+num = int(decimal_str)
+return bin(num)[2:]
+
+def binary_to_decimal(binary_str):
+return str(int(binary_str, 2))
+def calculate_subnet_power(subnets):
+return mt.ceil(mt.log2(subnets))
+
+def get_integer_octets(ip):
+octets = ip.split(".")
+for i in range(len(octets)):
+octets[i] = int(octets[i])
+return octets
+
+def get_string_octets(ip_list):
+octets = ip_list
+for i in range(len(octets)):
+octets[i] = str(octets[i])
+return octets
+
+def add_hosts(ip, hosts):
+octets = get_integer_octets(ip)
+addition = [0, 0, 0, hosts]
+for i in range(3, 0, -1):
+temp = octets[i] + addition[i]
+if (temp > 255):
+addition[i - 1] = temp // 256
+octets[i] = temp % 256
+else:
+octets[i] += addition[i]
+return ".".join(get_string_octets(octets))
+return ".".join(get_string_octets(octets))
+
+def get_previous_ip(ip):
+
+octets = get_integer_octets(ip)
+octets[3] -= 1
+for i in range(3, 0, -1):
+temp = octets[i]
+if (temp < 0):
+octets[i - 1] -= 1
+octets[i] = 255
+return ".".join(get_string_octets(octets))
+
+def get_next_ip(ip):
+octets = get_integer_octets(ip)
+octets[3] += 1
+for i in range(3, 0, -1):
+temp = octets[i]
+if (temp > 255):
+octets[i - 1] += 1
+octets[i] = 0
+return ".".join(get_string_octets(octets))
+
+def flsm_network(ip, min_subnets):
+result = {}
+classful_mask = 8 # Default to Class A
+if 128 <= int(ip.split(".")[0]) <= 191:
+classful_mask = 16 # Class B
+elif 192 <= int(ip.split(".")[0]) <= 223:
+classful_mask = 24 # Class C
+subnet_power = calculate_subnet_power(min_subnets)
+new_mask = classful_mask + subnet_power
+mask_str = "255.255.255.0"
+if classful_mask == 16:
+mask_str = "255.255.0.0"
+elif classful_mask == 8:
+mask_str = "255.0.0.0"
+remaining_bits = 32 - new_mask
+print("\n Total Number of Hosts in each Subnet ={} ".format(2**(remaining_bits)-2))
+for i in range(pow(2, subnet_power)):
+network_name = "Net " + str(i + 1)
+result[network_name] = []
+result[network_name].append(ip)
+result[network_name].append(mask_str)
+ip = add_hosts(ip, pow(2, remaining_bits))
+result[network_name].append(get_previous_ip(ip))
+return result
+
+def print_subnets(subnet_dict):
+print("%20s\t%18s%15s%18s" %
+("Name of network", "Subnet Id ", "Mask", "Broadcast"))
+for key, value in subnet_dict.items():
+print("%20s\t%18s%15s%18s" % (key, value[0], value[1], value[2]))
+
+ip_address = input('Enter the base IP address: ')
+min_subnets = int(input('Enter the minimum number of subnets to create: '))
+
+flsm_subnets = flsm_network(ip_address, min_subnets)
+print("Fixed Length Subnet Masking (FLSM) Subnets:")
+print_subnets(flsm_subnets)
