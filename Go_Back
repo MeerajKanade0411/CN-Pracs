@@ -1,0 +1,26 @@
+import random
+import time
+total_frames = int(input("Enter the total number of frames: "))
+window_size = int(input("Enter the Window Size: "))
+total_transmissions = 0
+random.seed(time.time())
+current_frame = 1
+while current_frame <= total_frames:
+transmitted_frames = 0
+for frame in range(current_frame, min(current_frame +
+window_size, total_frames + 1)):
+print("Frames sent", frame)
+total_transmissions += 1
+for frame in range(current_frame, min(current_frame +
+window_size, total_frames + 1)):
+flag = random.randint(0, 1)
+if not flag:
+print("Acknowledgment for Frame", frame)
+transmitted_frames += 1
+else:
+print("Frame", frame, "Not Received")
+print("Retransmitting Window")
+break
+print()
+current_frame += transmitted_frames
+print("Total number of transmissions:", total_transmissions)
