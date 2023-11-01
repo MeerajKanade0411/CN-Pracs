@@ -1,0 +1,31 @@
+import java.io.*;
+import java.net.*;
+public class MyClient {
+public static void main(String[] args) {
+try {
+Socket s = new Socket("localhost", 6666);
+DataInputStream dis = new
+DataInputStream(s.getInputStream());
+DataOutputStream dos = new
+DataOutputStream(s.getOutputStream());
+// Read the prompt from the server
+String prompt = dis.readUTF();
+System.out.println("Server says: " + prompt);
+// Get user input
+BufferedReader reader = new BufferedReader(new
+InputStreamReader(System.in));
+System.out.print("Enter a string: ");
+String userInput = reader.readLine();
+// Send the user's input to the server
+dos.writeUTF(userInput);
+// Receive the vowel count from the server
+String response = dis.readUTF();
+System.out.println("Server says: " + response);
+dis.close();
+dos.close();
+s.close();
+} catch (IOException e) {
+e.printStackTrace();
+}
+}
+}
