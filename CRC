@@ -1,0 +1,55 @@
+#CRC code generation
+def CRC(data, poly):
+data.extend([0] * (len(poly) - 1))
+for i in range(len(data) - len(poly) + 1):
+if data[i] == 1:
+for j in range(len(poly)):
+data[i + j] = data[i + j] ^ poly[j]
+crc = data[-len(poly) + 1:]
+return crc
+
+data = list(map(int, input("Enter the data bits:\n")))
+dup_data=data.copy()
+poly = list(map(int, input("Enter the generator polynomial in binary
+form:\n")))
+crc_code = CRC(data,poly)
+dup_data.extend(crc_code)
+print("CRC code:{}".format(''.join(map(str, dup_data)) ))
+# error checking
+def check():
+data1 = list(map(int,input("Enter the data word received by you:
+\n")))
+data1_dup=data1.copy()
+poly1 = list(map(int,input("Enter your generator polynomial in
+binary form:\n")))
+for i in range(len(data1) - len(poly1) + 1):
+if data1[i] == 1:
+for j in range(len(poly1)):
+data1[i + j] = data1[i + j] ^ poly1[j]
+crc = data1[-len(poly) + 1:]
+count = 0
+for i in range(len(poly1)-1):
+if crc[i]!=0:
+count+=1
+if count==0:
+print("The codeword received has no error")
+print("The correct data bits are =",(data1_dup[0:-
+len(poly1)+1]))
+else:
+print("The received code word is wrong\n")
+check()
+'''
+python -u "/Users/macbook/Desktop/Sem5_lab/CN/crc.py"
+(base) macbook@Chaitanya-Macbook-Pro ~ % python -u "/Users/macbook/
+
+Desktop/Sem5_lab/CN/crc.py"
+Enter the data bits:
+110101
+Enter the generator polynomial in binary form:
+101
+CRC code:11010111
+Enter the data word received by you:
+11010110
+Enter your generator polynomial in binary form:
+101
+The received code word is wrong
